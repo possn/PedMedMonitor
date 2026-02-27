@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2ea6" />
+  <title>PedMedMonitor</title>
+  <meta name="description" content="PedMedMonitor — apoio à monitorização de vancomicina e aminoglicosídeos (educacional).">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="PedMedMonitor" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon-192.png" alt="Ícone" class="logo" />
+      <div>
+        <div class="title">PedMedMonitor</div>
+        <div class="subtitle">Monitorização & simulação PK/PD — <span class="muted">uso educacional</span></div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="btnExample" class="btn btn-ghost" title="Carregar exemplo">Exemplo</button>
+      <button id="btnReset" class="btn btn-ghost" title="Limpar tudo">Limpar</button>
+      <button id="btnPDF" class="btn btn-primary" title="Gerar PDF">PDF</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid">
+
+      <!-- 1) ANTIBIÓTICO + REGIME -->
+      <div class="card">
+        <h2>1) Antibiótico e regime</h2>
+
+        <div class="row">
+          <label class="field">
+            <span>Antibiótico</span>
+            <select id="abx">
+              <option value="vanco_int">Vancomicina — intermitente</option>
+              <option value="vanco_ci">Vancomicina — perfusão contínua</option>
+              <option value="genta">Gentamicina</option>
+              <option value="amika">Amicacina</option>
+              <option value="tobra">Tobramicina</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Patologia / alvo (padrão)</span>
+            <select id="indication">
+              <option value="std">Standard</option>
+              <option value="severe">Grave (p.ex. bacteriemia/osteomielite)</option>
+              <option value="cns">SNC (p.ex. meningite)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="note">
+          <b>Nota:</b> O modelo é <b>1 compartimento</b> (aprox.). A vancomicina moderna é idealmente orientada por <b>AUC</b>, mas aqui usa-se
+          <b>pico/vale</b> como aproximação. Confirma sempre com protocolos locais e farmacologia clínica.
+        </div>
+      </div>
+
+      <!-- 2) DOSE + INTERVALO -->
+      <div class="card">
+        <h2>2) Dose e intervalo</h2>
+
+        <div class="row">
+          <label class="field">
+            <span>Dose administrada (mg)</span>
+            <input id="dose_mg" type="number" min="0" step="1" placeholder="ex: 1000" />
+          </label>
+
+          <label class="field">
+            <span>Tempo de perfusão (min) — intermitente</span>
+            <input id="t_inf_min" type="number" min="1" step="1" placeholder="ex: 60" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Intervalo</span>
+            <select id="tau_h">
+              <option value="4">4/4h</option>
+              <option value="6">6/6h</option>
+              <option value="8">8/8h</option>
+              <option value="12" selected>12/12h</option>
+              <option value="18">18/18h</option>
+              <option value="24">24/24h</option>
+              <option value="36">36/36h</option>
+              <option value="48">48/48h</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Perfusão contínua (mg/h) — apenas vanco CI</span>
+            <input id="rate_mg_h" type="number" min="0" step="1" placeholder="ex: 40" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>N.º doses já dadas (para aproximação “steady state”)</span>
+            <input id="n_doses" type="number" min="1" step="1" value="4" />
+          </label>
+
+          <label class="field">
+            <span>MIC (mg/L) — opcional (vanco)</span>
+            <input id="mic" type="number" min="0" step="0.1" placeholder="ex: 1" />
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="btnSim" class="btn btn-primary">Simular</button>
+          <button id="btnSuggest" class="btn">Sugerir ajuste</button>
+        </div>
+      </div>
+
+      <!-- 3) DADOS DO DOENTE -->
+      <div class="card">
+        <h2>3) Dados do doente</h2>
+
+        <div class="row">
+          <label class="field">
+            <span>ID (opcional)</span>
+            <input id="pt_id" type="text" placeholder="ex: 24-0312" />
+          </label>
+
+          <label class="field">
+            <span>Sexo</span>
+            <select id="sex">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Peso (kg)</span>
+            <input id="wt" type="number" min="0" step="0.1" placeholder="ex: 70" />
+          </label>
+
+          <label class="field">
+            <span>Altura (cm)</span>
+            <input id="ht" type="number" min="0" step="0.1" placeholder="ex: 170" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Idade (dias)</span>
+            <input id="age_d" type="number" min="0" step="1" placeholder="0" />
+          </label>
+          <label class="field">
+            <span>Idade (meses)</span>
+            <input id="age_m" type="number" min="0" step="1" placeholder="0" />
+          </label>
+          <label class="field">
+            <span>Idade (anos)</span>
+            <input id="age_y" type="number" min="0" step="0.1" placeholder="ex: 45" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Creatinina (mg/dL)</span>
+            <input id="scr" type="number" min="0" step="0.01" placeholder="ex: 1.0" />
+          </label>
+
+          <label class="field">
+            <span>Doença renal (alerta)</span>
+            <select id="aki">
+              <option value="no" selected>Não / desconhecido</option>
+              <option value="yes">Sim (considerar reduzir dose)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="note small">
+          Para pediatria, estima-se eGFR por <b>Schwartz (2009)</b> (k=0.413) usando altura em cm e creatinina em mg/dL. Para adultos, usa-se <b>Cockcroft–Gault</b>.
+        </div>
+      </div>
+
+      <!-- 4) DOSEAMENTO (PICO/VALE/RANDOM) -->
+      <div class="card">
+        <h2>4) Doseamento e calibração</h2>
+
+        <div class="row">
+          <label class="field">
+            <span>Valor medido (mg/L)</span>
+            <input id="meas" type="number" min="0" step="0.1" placeholder="ex: 12.5" />
+          </label>
+
+          <label class="field">
+            <span>Tipo</span>
+            <select id="meas_type">
+              <option value="trough">Vale</option>
+              <option value="peak">Pico</option>
+              <option value="random">Random</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Horas desde o fim da perfusão (pico/random)</span>
+            <input id="t_post_h" type="number" min="0" step="0.1" placeholder="ex: 1.0" />
+          </label>
+
+          <label class="field">
+            <span>Horas desde a última dose (random) — alternativa</span>
+            <input id="t_since_h" type="number" min="0" step="0.1" placeholder="ex: 6.0" />
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="btnCal" class="btn">Calibrar com doseamento</button>
+        </div>
+
+        <div class="note small">
+          A calibração ajusta <b>CL</b> (depuração) para aproximar a curva ao nível medido (1 ponto). Isto é útil, mas é limitado: um único ponto não identifica CL+V simultaneamente.
+        </div>
+      </div>
+
+    </section>
+
+    <section class="card">
+      <h2>Resultados</h2>
+
+      <div class="statusline">
+        <div id="statusBadge" class="badge">—</div>
+        <div class="muted" id="statusText">Preenche os dados e clica <b>Simular</b>.</div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="pkChart" height="240"></canvas>
+      </div>
+
+      <div class="two">
+        <div class="panel">
+          <h3>Parâmetros estimados</h3>
+          <div id="params" class="mono small"></div>
+        </div>
+        <div class="panel">
+          <h3>Alvos e sugestão</h3>
+          <div id="targets" class="mono small"></div>
+        </div>
+      </div>
+
+      <details class="disclaimer">
+        <summary>Limitações importantes</summary>
+        <ul>
+          <li>Modelo de 1 compartimento; não substitui TDM formal nem software validado.</li>
+          <li>Vancomicina: idealmente orientar por AUC/MIC; vale é proxy imperfeita.</li>
+          <li>Neonatos/instabilidade/ECMO/CRRT/obesidade/edema: parâmetros podem divergir.</li>
+          <li>As sugestões são matemáticas; a decisão clínica requer contexto.</li>
+        </ul>
+      </details>
+    </section>
+
+    <footer class="footer muted">
+      PedMedMonitor — versão local (GitHub Pages). © Uso educacional.
+    </footer>
+  </main>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+    }
+  </script>
+</body>
+</html>
