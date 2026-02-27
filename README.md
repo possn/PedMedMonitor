@@ -11,3 +11,8 @@ PWA (GitHub Pages) para simulação PK/PD (modelo 1-compartimento) e apoio **edu
 ## Notas
 - AUC24 é calculado por dose diária / CL (linear). Para perfusão contínua: AUC24 ≈ Css·24.
 - Calibração por doseamento: ajusta CL com 1 ponto (limitação).
+
+
+## Persistência (local)
+- Guarda até 3 doentes (slots 1–3) em `localStorage` do browser (no iPhone via PWA também funciona).
+- Botões: **Carregar / Guardar / Novo doente**.

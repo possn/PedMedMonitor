@@ -719,6 +719,100 @@ function toggleFields(){
   $("tauWrap").style.opacity  = isCI ? ".55" : "1";
 }
 
+
+// ---------- Persistência (até 3 doentes) ----------
+const STORAGE_KEY = "pedmedmonitor_patients_v1";
+function loadStore(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { slots: { "1": null, "2": null, "3": null } };
+    const obj = JSON.parse(raw);
+    if (!obj || !obj.slots) throw new Error("bad");
+    return obj;
+  } catch {
+    return { slots: { "1": null, "2": null, "3": null } };
+  }
+}
+function saveStore(store){ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+
+function getFormState(){
+  const ids = [
+    "pt_id","sex","wt","ht","age_d","age_m","age_y","scr",
+    "abx","indication","vanco_mode","ag_mode",
+    "dose_mg","t_inf_min","tau_h","rate_mg_h","n_doses","mic",
+    "meas","meas_type","t_post_h","t_since_h"
+  ];
+  const st = {};
+  for (const id of ids){
+    const el = $(id);
+    if (!el) continue;
+    st[id] = el.value;
+  }
+  return st;
+}
+
+function setFormState(st){
+  if (!st) return;
+  for (const [id,val] of Object.entries(st)){
+    const el = $(id);
+    if (!el) continue;
+    el.value = val;
+  }
+  toggleFields();
+}
+
+function slotId(){ return ($("pt_slot")?.value || "1"); }
+
+function patientLabel(st){
+  const id = (st?.pt_id || "").trim();
+  const wt = st?.wt ? `${st.wt} kg` : "";
+  const age = st?.age_y ? `${st.age_y} a` : "";
+  const parts = [id||"Sem ID", wt, age].filter(Boolean);
+  return parts.join(" • ");
+}
+
+function savePatientToSlot(){
+  const sid = slotId();
+  const store = loadStore();
+  const st = getFormState();
+  store.slots[sid] = { saved_at: new Date().toISOString(), label: patientLabel(st), form: st };
+  saveStore(store);
+  alert(`Doente guardado no slot ${sid}.`);
+}
+
+function loadPatientFromSlot(){
+  const sid = slotId();
+  const store = loadStore();
+  const p = store.slots[sid];
+  if (!p || !p.form){ alert(`Slot ${sid} vazio.`); return; }
+  setFormState(p.form);
+  state.cl_adj = null; // segurança: recalcular CL sem “restos” de calibração anterior
+  state.last = null;
+  // tenta simular automaticamente se houver dados mínimos
+  try { runSim(); } catch {}
+}
+
+function newPatient(){
+  // Novo doente: limpa campos do doente + doseamentos; preserva antibiotic/modes por conveniência.
+  const keepAbx = $("abx").value;
+  const keepInd = $("indication").value;
+  const keepV = $("vanco_mode").value;
+  const keepA = $("ag_mode").value;
+
+  resetAll();
+
+  $("abx").value = keepAbx;
+  $("indication").value = keepInd;
+  $("vanco_mode").value = keepV;
+  $("ag_mode").value = keepA;
+  toggleFields();
+}
+
+// Botões
+if ($("btnPtSave")) $("btnPtSave").addEventListener("click", savePatientToSlot);
+if ($("btnPtLoad")) $("btnPtLoad").addEventListener("click", loadPatientFromSlot);
+if ($("btnPtNew"))  $("btnPtNew").addEventListener("click", newPatient);
+
 // init
 $("btnSim").addEventListener("click", runSim);
 $("btnSuggest").addEventListener("click", doSuggest);
