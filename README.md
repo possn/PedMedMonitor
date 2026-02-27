@@ -1,23 +1,13 @@
-# PedMedMonitor (GitHub Pages)
+# PedMedMonitor (v2)
 
-App web (PWA) para simulação PK/PD (modelo 1-compartimento) e apoio **educacional** à monitorização de:
-- Vancomicina (intermitente e perfusão contínua)
-- Gentamicina, Amicacina, Tobramicina
+PWA (GitHub Pages) para simulação PK/PD (modelo 1-compartimento) e apoio **educacional** à monitorização de:
+- Vancomicina: **AUC/MIC**, **Pico/Vale (proxy)**, **Perfusão contínua (Css)**
+- Gentamicina, Amicacina, Tobramicina: **dose única diária** e **múltiplas doses**
 
 ## Deploy (GitHub Pages)
-1. Cria um repositório no GitHub (ex: `pedmedmonitor`)
-2. Faz upload **do conteúdo deste ZIP** para a raiz do repositório
-3. Em **Settings → Pages**
-   - Source: `Deploy from a branch`
-   - Branch: `main` e folder `/ (root)`
-4. Abre o URL do Pages.
+1. Faz upload do conteúdo do ZIP para a raiz do repositório
+2. Settings → Pages → Deploy from a branch → `main` / `(root)`
 
-## Uso
-1. Seleciona antibiótico e indicação
-2. Introduz dose + intervalo
-3. Preenche peso/altura/idade/creatinina
-4. Simular
-5. (Opcional) Introduz nível medido e calibra
-
-## Aviso
-Isto **não é** software médico validado; não substitui protocolos, TDM formal nem decisão clínica.
+## Notas
+- AUC24 é calculado por dose diária / CL (linear). Para perfusão contínua: AUC24 ≈ Css·24.
+- Calibração por doseamento: ajusta CL com 1 ponto (limitação).

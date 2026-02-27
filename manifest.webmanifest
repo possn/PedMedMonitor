@@ -3,8 +3,8 @@
   "short_name": "PedMed",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#0b2ea6",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0ea5e9",
   "icons": [
     {
       "src": "icons/icon-192.png",
