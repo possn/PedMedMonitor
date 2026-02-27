@@ -29,20 +29,25 @@
     </div>
 
     <div class="appbar__right">
-      <div class="slot">
-        <span class="slot__label">Doente</span>
-        <select id="pt_slot" class="slot__select" aria-label="Selecionar doente guardado">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
+      <div class="toolbar toolbar--a">
+        <div class="slot">
+          <span class="slot__label">Doente</span>
+          <select id="pt_slot" class="slot__select" aria-label="Selecionar doente guardado">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <button id="btnPtLoad" class="chip">Carregar</button>
+        <button id="btnPtSave" class="chip">Guardar</button>
+        <button id="btnPtNew" class="chip">Novo doente</button>
       </div>
-      <button id="btnPtLoad" class="chip">Carregar</button>
-      <button id="btnPtSave" class="chip">Guardar</button>
-      <button id="btnPtNew" class="chip">Novo doente</button>
-      <button id="btnExample" class="chip">Exemplo</button>
-      <button id="btnReset" class="chip">Limpar</button>
-      <button id="btnPDF" class="chip chip--primary">PDF</button>
+
+      <div class="toolbar toolbar--b">
+        <button id="btnExample" class="chip">Exemplo</button>
+        <button id="btnReset" class="chip">Limpar</button>
+        <button id="btnPDF" class="chip chip--primary">PDF</button>
+      </div>
     </div>
   </header>
 

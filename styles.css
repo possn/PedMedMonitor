@@ -236,3 +236,40 @@ input:focus,select:focus{
   font-weight:900;
 }
 .slot__select:focus{box-shadow:none}
+
+
+/* --- Appbar: organizar topo em 2 colunas no telemóvel --- */
+.appbar__right{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:100%;
+}
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+@media (max-width: 520px){
+  .appbar__right{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap:10px;
+    row-gap:10px;
+    align-items:start;
+  }
+  .toolbar{
+    gap:8px;
+  }
+  .toolbar--a{grid-column:1;}
+  .toolbar--b{grid-column:2; justify-content:flex-end;}
+  .chip{
+    padding:9px 10px;
+    font-size:13px;
+  }
+  .slot{
+    padding:7px 9px;
+  }
+  .slot__label{display:none;}
+}
